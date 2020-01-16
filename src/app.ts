@@ -17,6 +17,9 @@ export class App {
       preflightContinue: false
     }));
     this.app.use('/auth', authRoutes);
+    this.app.get('/test', (req, res) => {
+      res.send('Hi there, this is the server!');
+    })
   }
   
   public listen() {
