@@ -105,3 +105,8 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Package JSON Changes locally
+package.json
+backup_package.json
+package-lock.json
