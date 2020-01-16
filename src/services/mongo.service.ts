@@ -9,6 +9,7 @@ const dbName = 'myTestDb';
 export class MongoDB {
   
   public async createRecord(data: any, collectionName: string) {
+    debug(data);
     const client = await MongoClient.connect(url, mongodOpt).catch((error) => debug(error));
     if (!client) return false;
     let result;
