@@ -1,35 +1,27 @@
-import Debug from 'debug';
 import express, { Request, Response } from 'express';
-import { MongoDB } from '../services/mongo.service';
-import { Encryption } from '../services/encryption.service';
+import { mongodb } from '../services/mongo.service';
+import { encryption } from '../services/encryption.service';
+import { validate } from '../services/jwt.service';
+import { findUser } from '../core/user_functions';
 
 const authRoutes = express.Router();
-const debug = Debug('app:authController');
-const mongo = new MongoDB();
-const errorMsg = 'An error occurred';
-const encryption = new Encryption();
 
 authRoutes.post('/register', async (req: Request, res: Response) => {
   const { username, password } = req.body;
   if (await findUser({username})) return res.send('User already exists');
   const record = { username, password: await encryption.encrypt(password) };
-  const result = await mongo.createRecord(record, 'users');
-  res.send(result ? result : errorMsg)
+  const result: any = await mongodb.createRecord(record, 'users');
+  res.send(result ? 'User created' : 'An error occurred');
 })
 
 authRoutes.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = await findUser({ username });
-  const authorise = await encryption.decrypt(user, password);
-  if (!authorise) return errorMsg;
-  const issueToken(user._id)
-  res.send(authorise ? user : errorMsg)
+  if (await encryption.decrypt(user, password)) {
+    const token = validate.issueToken({ id: user._id });
+    return res.send(token);
+  };
+  return res.send('Password incorrect');
 })
-
-async function findUser(userData: any) {
-  const { username } = userData;
-  const result = await mongo.findRecord({ username }, 'users');
-  return result;
-}
 
 export { authRoutes };

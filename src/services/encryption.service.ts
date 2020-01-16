@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 const debug = Debug('app:encryption.service');
 
-export class Encryption {
+class Encryption {
 
   public async encrypt(pw: string) {
     const salt = await bcrypt.genSalt(10);
@@ -17,3 +17,6 @@ export class Encryption {
   }
 
 }
+
+const encryption = new Encryption();
+export { encryption };

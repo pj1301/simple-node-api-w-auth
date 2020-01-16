@@ -6,10 +6,9 @@ const url = 'mongodb://localhost:27017';
 const mongodOpt = { useNewUrlParser: true, useUnifiedTopology: true };
 const dbName = 'myTestDb';
 
-export class MongoDB {
+class MongoDB {
   
   public async createRecord(data: any, collectionName: string) {
-    debug(data);
     const client = await MongoClient.connect(url, mongodOpt).catch((error) => debug(error));
     if (!client) return false;
     let result;
@@ -31,6 +30,9 @@ export class MongoDB {
       debug(error);
     }
     return result;
-  } 
+  }
 
 }
+
+const mongodb = new MongoDB();
+export { mongodb };
