@@ -23,12 +23,14 @@ There are a number of vital packages included in the package.json file, these mu
 * @types/express
 * @types/express-serve-static-core
 * @types/jsonwebtoken
+* @types/mongodb
 * @types/node
 * bcrypt
 * cors
 * debug
 * express
 * jsonwebtoken
+* mongodb
 * nodemon
 * ts-node
 * typescript
