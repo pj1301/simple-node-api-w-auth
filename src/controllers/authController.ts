@@ -1,15 +1,27 @@
-import Debug from 'debug';
 import express, { Request, Response } from 'express';
+import { mongodb } from '../services/mongo.service';
+import { encryption } from '../services/encryption.service';
+import { validate } from '../services/jwt.service';
+import { findUser } from '../core/user_functions';
 
 const authRoutes = express.Router();
-const debug = Debug('app:authController');
 
-authRoutes.post('/register', (req: Request, res: Response): void => {
-    res.send('Registering a new user');
-  })
+authRoutes.post('/register', async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  if (await findUser({username})) return res.send('User already exists');
+  const record = { username, password: await encryption.encrypt(password) };
+  const result: any = await mongodb.createRecord(record, 'users');
+  res.send(result ? 'User created' : 'An error occurred');
+})
 
-authRoutes.post('/login', (req: any, res: any) => {
-    res.send('Logging in a user');
-  })
+authRoutes.post('/login', async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+  const user = await findUser({ username });
+  if (await encryption.decrypt(user, password)) {
+    const token = validate.issueToken({ id: user._id });
+    return res.send(token);
+  };
+  return res.send('Password incorrect');
+})
 
 export { authRoutes };
