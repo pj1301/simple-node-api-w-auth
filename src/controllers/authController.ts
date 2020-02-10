@@ -17,11 +17,12 @@ authRoutes.post('/register', async (req: Request, res: Response) => {
 authRoutes.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
   const user = await findUser({ username });
+  if (!user) return res.send('User credentials incorrect');
   if (await encryption.decrypt(user, password)) {
     const token = validate.issueToken({ id: user._id });
     return res.send(token);
-  };
-  return res.send('Password incorrect');
+  }
+  return res.send('User credentials incorrect');
 })
 
 export { authRoutes };
